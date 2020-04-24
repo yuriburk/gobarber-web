@@ -41,7 +41,6 @@ export const Content = styled.div`
     }
   }
 
-  /* > o que está diretamente acima */
   > a {
     color: #ff9000;
     display: block;
