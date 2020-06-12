@@ -1,58 +1,60 @@
-import React, { useCallback, useRef } from 'react';
-import { FiArrowLeft, FiMail, FiUser, FiLock } from 'react-icons/fi';
-import { FormHandles } from '@unform/core';
+import React, { useRef, useCallback, useState } from 'react';
+import { FiLogIn, FiMail } from 'react-icons/fi';
 import { Form } from '@unform/web';
+import { FormHandles } from '@unform/core';
 import * as Yup from 'yup';
 import { Link } from 'react-router-dom';
 
-import { useAuth } from '../../hooks/auth';
-import api from '../../services/api';
 import { useToast } from '../../hooks/toast';
-import logoImg from '../../assets/logo.svg';
-import Input from '../../components/Input';
-import Button from '../../components/Button';
 import getValidationErrors from '../../utils/getValidationErrors';
 
-import { Container, Content, AnimationContainer, Background } from './styles';
+import logoImg from '../../assets/logo.svg';
 
-interface SignUpFormData {
-  name: string;
+import Input from '../../components/Input';
+import Button from '../../components/Button';
+
+import { Container, Content, AnimationContainer, Background } from './styles';
+import api from '../../services/api';
+
+interface ForgotPasswordFormData {
   email: string;
   password: string;
 }
 
-const SignUp: React.FC = () => {
+const ForgotPassword: React.FC = () => {
+  const [loading, setLoading] = useState(false);
   const formRef = useRef<FormHandles>(null);
+
   const { addToast } = useToast();
-  const { signIn } = useAuth();
 
   const handleSubmit = useCallback(
-    async (data: SignUpFormData) => {
+    async (data: ForgotPasswordFormData) => {
       try {
+        setLoading(true);
         formRef.current?.setErrors({});
         const schema = Yup.object().shape({
-          name: Yup.string().required('Nome obrigatório'),
           email: Yup.string()
             .required('E-mail obrigatório')
             .email('Digite um e-mail válido'),
-          password: Yup.string().min(5, 'No mínimo 5 digitos'),
         });
 
         await schema.validate(data, {
           abortEarly: false,
         });
 
-        await api.post('/users', data);
+        await api.post('/password/forgot', {
+          email: data.email,
+        });
 
         addToast({
           type: 'success',
-          title: 'Cadastro realizado!',
+          title: 'E-mail de recuperação enviado',
+          description:
+            'Enviamos um e-mail para confirmar a recuperação de senha, cheque sua caixa de entrada.',
         });
-
-        await signIn({ email: data.email, password: data.password });
-      } catch (err) {
-        if (err instanceof Yup.ValidationError) {
-          const errors = getValidationErrors(err);
+      } catch (error) {
+        if (error instanceof Yup.ValidationError) {
+          const errors = getValidationErrors(error);
           formRef.current?.setErrors(errors);
 
           return;
@@ -60,45 +62,43 @@ const SignUp: React.FC = () => {
 
         addToast({
           type: 'error',
-          title: 'Erro no cadastro',
-          description: 'Ocorreu um erro ao cadastrar, tente novamente.',
+          title: 'Erro na recuperação de senha',
+          description:
+            'Ocorreu um erro ao tentar realizar a recuperação de senha, tente novamente.',
         });
+      } finally {
+        setLoading(false);
       }
     },
-    [addToast, signIn],
+    [addToast],
   );
 
   return (
     <Container>
-      <Background />
-
       <Content>
         <AnimationContainer>
           <img src={logoImg} alt="GoBarber" />
 
           <Form ref={formRef} onSubmit={data => handleSubmit(data)}>
-            <h1>Faça seu logon</h1>
+            <h1>Recuperar senha</h1>
 
-            <Input name="name" icon={FiUser} placeholder="Nome" />
             <Input name="email" icon={FiMail} placeholder="E-mail" />
-            <Input
-              name="password"
-              icon={FiLock}
-              type="password"
-              placeholder="Senha"
-            />
 
-            <Button type="submit">Cadastrar</Button>
+            <Button loading={loading} type="submit">
+              Recuperar
+            </Button>
           </Form>
 
           <Link to="/">
-            <FiArrowLeft />
-            Voltar para Logon
+            <FiLogIn />
+            Voltar ao login
           </Link>
         </AnimationContainer>
       </Content>
+
+      <Background />
     </Container>
   );
 };
 
-export default SignUp;
+export default ForgotPassword;
