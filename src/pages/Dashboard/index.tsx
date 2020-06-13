@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useEffect, useMemo } from 'react';
-import { isToday, format, parseISO, isAfter } from 'date-fns';
+import { isToday, format, parseISO, isAfter, getDay } from 'date-fns';
 import ptBR from 'date-fns/locale/pt-BR';
 import DayPicker, { DayModifiers } from 'react-day-picker';
 import 'react-day-picker/lib/style.css';
@@ -62,6 +62,21 @@ const Dashboard: React.FC = () => {
     (month: Date) => setCurrentMonth(month),
     [],
   );
+
+  useEffect(() => {
+    const date = new Date();
+    const dayOfWeek = getDay(date);
+    const sunday = 0;
+    const saturday = 6;
+
+    if (dayOfWeek === saturday) {
+      date.setDate(date.getDate() + 2);
+      setSelectedDate(date);
+    } else if (dayOfWeek === sunday) {
+      date.setDate(date.getDate() + 1);
+      setSelectedDate(date);
+    }
+  }, []);
 
   useEffect(() => {
     api

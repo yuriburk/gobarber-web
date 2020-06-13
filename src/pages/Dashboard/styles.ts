@@ -26,13 +26,14 @@ export const HeaderButtons = styled.div`
   button {
     background: transparent;
     border: 0;
+    transition: opacity 0.2s;
 
     & + button {
       margin-left: 10px;
     }
 
     &:hover {
-      opacity: 0.8;
+      opacity: 0.5;
     }
 
     svg {
