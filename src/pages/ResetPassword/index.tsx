@@ -45,8 +45,6 @@ const ResetPassword: React.FC = () => {
           abortEarly: false,
         });
 
-        history.push('/');
-
         const { password, password_confirmation } = data;
         const token = location.search.replace('?token=', '');
 
@@ -59,6 +57,14 @@ const ResetPassword: React.FC = () => {
           password_confirmation,
           token,
         });
+
+        addToast({
+          type: 'success',
+          title: 'Sucesso',
+          description: 'Sua senha foi resetada.',
+        });
+
+        history.push('/');
       } catch (error) {
         if (error instanceof Yup.ValidationError) {
           const errors = getValidationErrors(error);
