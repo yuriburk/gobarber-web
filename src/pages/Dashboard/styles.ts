@@ -18,11 +18,22 @@ export const HeaderContent = styled.div`
   > img {
     height: 80px;
   }
+`;
+
+export const HeaderButtons = styled.div`
+  margin-left: auto;
 
   button {
-    margin-left: auto;
     background: transparent;
     border: 0;
+
+    & + button {
+      margin-left: 10px;
+    }
+
+    &:hover {
+      opacity: 0.8;
+    }
 
     svg {
       color: #999591;
@@ -160,6 +171,10 @@ export const Section = styled.div`
     padding-bottom: 16px;
     margin-bottom: 16px;
   }
+
+  > p {
+    color: #999591;
+  }
 `;
 
 export const Appointment = styled.div`
@@ -175,6 +190,7 @@ export const Appointment = styled.div`
     display: flex;
     align-items: center;
     color: #f4ede8;
+    width: 70px;
 
     svg {
       color: #ff9000;
